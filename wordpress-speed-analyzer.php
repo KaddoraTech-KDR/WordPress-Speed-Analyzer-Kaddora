@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin Name: WordPress Speed Analyzer Kaddora
  * Description: Analyze WordPress site speed with PageSpeed Insights, Core Web Vitals, plugin impact checks, and database analysis.
@@ -15,7 +16,7 @@
  * @package WordPress_Speed_Analyzer
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
+if (! defined('ABSPATH')) {
 	exit;
 }
 
@@ -24,28 +25,28 @@ if ( ! defined( 'ABSPATH' ) ) {
 | Plugin Constants
 |--------------------------------------------------------------------------
 */
-define( 'WSA_VERSION', '1.0.0' );
-define( 'WSA_FILE', __FILE__ );
-define( 'WSA_PATH', plugin_dir_path( __FILE__ ) );
-define( 'WSA_URL', plugin_dir_url( __FILE__ ) );
-define( 'WSA_BASENAME', plugin_basename( __FILE__ ) );
+define('WSA_VERSION', '1.0.0');
+define('WSA_FILE', __FILE__);
+define('WSA_PATH', plugin_dir_path(__FILE__));
+define('WSA_URL', plugin_dir_url(__FILE__));
+define('WSA_BASENAME', plugin_basename(__FILE__));
 
 /*
 |--------------------------------------------------------------------------
 | Minimum Requirements Check
 |--------------------------------------------------------------------------
 */
-if ( version_compare( PHP_VERSION, '7.4', '<' ) ) {
+if (version_compare(PHP_VERSION, '7.4', '<')) {
 	add_action(
 		'admin_notices',
 		static function () {
-			?>
-			<div class="notice notice-error">
-				<p>
-					<?php esc_html_e( 'WordPress Speed Analyzer requires PHP 7.4 or higher.', 'wordpress-speed-analyzer' ); ?>
-				</p>
-			</div>
-			<?php
+?>
+		<div class="notice notice-error">
+			<p>
+				<?php esc_html_e('WordPress Speed Analyzer requires PHP 7.4 or higher.', 'wordpress-speed-analyzer'); ?>
+			</p>
+		</div>
+<?php
 		}
 	);
 
@@ -77,30 +78,32 @@ require_once WSA_PATH . 'includes/services/class-scheduler.php';
 | Activation / Deactivation Hooks
 |--------------------------------------------------------------------------
 */
-register_activation_hook( __FILE__, array( 'WSA_Activator', 'activate' ) );
-register_deactivation_hook( __FILE__, array( 'WSA_Deactivator', 'deactivate' ) );
+register_activation_hook(__FILE__, array('WSA_Activator', 'activate'));
+register_deactivation_hook(__FILE__, array('WSA_Deactivator', 'deactivate'));
 
 /*
 |--------------------------------------------------------------------------
 | Load Text Domain
 |--------------------------------------------------------------------------
 */
-function wsa_load_textdomain() {
+function wsa_load_textdomain()
+{
 	load_plugin_textdomain(
 		'wordpress-speed-analyzer',
 		false,
-		dirname( WSA_BASENAME ) . '/languages'
+		dirname(WSA_BASENAME) . '/languages'
 	);
 }
-add_action( 'plugins_loaded', 'wsa_load_textdomain' );
+add_action('plugins_loaded', 'wsa_load_textdomain');
 
 /*
 |--------------------------------------------------------------------------
 | Initialize Plugin
 |--------------------------------------------------------------------------
 */
-function wsa_run_plugin() {
+function wsa_run_plugin()
+{
 	$plugin = new WSA_Plugin();
 	$plugin->run();
 }
-add_action( 'plugins_loaded', 'wsa_run_plugin', 20 );
+add_action('plugins_loaded', 'wsa_run_plugin', 20);

@@ -1,22 +1,28 @@
 <?php
+
 /**
  * Plugin deactivator.
  *
  * @package WordPress_Speed_Analyzer
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
+if (! defined('ABSPATH')) {
 	exit;
 }
 
-class WSA_Deactivator {
+class WSA_Deactivator
+{
 
 	/**
 	 * Run plugin deactivation tasks.
 	 *
 	 * @return void
 	 */
-	public static function deactivate() {
+	public static function deactivate()
+	{
+		$scheduler = new WSA_Scheduler();
+		$scheduler->clear_event();
+
 		self::clear_scheduled_events();
 		flush_rewrite_rules();
 	}
@@ -26,15 +32,16 @@ class WSA_Deactivator {
 	 *
 	 * @return void
 	 */
-	private static function clear_scheduled_events() {
+	private static function clear_scheduled_events()
+	{
 
-		$timestamp = wp_next_scheduled( 'wsa_run_scheduled_audit' );
+		$timestamp = wp_next_scheduled('wsa_run_scheduled_audit');
 
-		if ( $timestamp ) {
-			wp_unschedule_event( $timestamp, 'wsa_run_scheduled_audit' );
+		if ($timestamp) {
+			wp_unschedule_event($timestamp, 'wsa_run_scheduled_audit');
 		}
 
 		// Safety: remove all remaining scheduled hooks if any exist
-		wp_clear_scheduled_hook( 'wsa_run_scheduled_audit' );
+		wp_clear_scheduled_hook('wsa_run_scheduled_audit');
 	}
 }

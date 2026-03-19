@@ -1,15 +1,17 @@
 <?php
+
 /**
  * Main plugin controller.
  *
  * @package WordPress_Speed_Analyzer
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
+if (! defined('ABSPATH')) {
 	exit;
 }
 
-class WSA_Plugin {
+class WSA_Plugin
+{
 
 	/**
 	 * Admin instance.
@@ -77,7 +79,8 @@ class WSA_Plugin {
 	/**
 	 * Constructor.
 	 */
-	public function __construct() {
+	public function __construct()
+	{
 		$this->load_dependencies();
 		$this->setup_services();
 	}
@@ -89,7 +92,8 @@ class WSA_Plugin {
 	 *
 	 * @return void
 	 */
-	private function load_dependencies() {
+	private function load_dependencies()
+	{
 		// Reserved for future dependency setup if needed.
 	}
 
@@ -98,10 +102,11 @@ class WSA_Plugin {
 	 *
 	 * @return void
 	 */
-	private function setup_services() {
+	private function setup_services()
+	{
 		$this->settings               = new WSA_Settings();
-		$this->scheduler              = new WSA_Scheduler( $this->settings );
-		$this->pagespeed_api          = new WSA_PageSpeed_API( $this->settings );
+		$this->scheduler              = new WSA_Scheduler($this->settings);
+		$this->pagespeed_api          = new WSA_PageSpeed_API($this->settings);
 		$this->suggestions_engine     = new WSA_Suggestions_Engine();
 		$this->plugin_impact_analyzer = new WSA_Plugin_Impact_Analyzer();
 		$this->database_analyzer      = new WSA_Database_Analyzer();
@@ -130,7 +135,8 @@ class WSA_Plugin {
 	 *
 	 * @return void
 	 */
-	public function run() {
+	public function run()
+	{
 		$this->register_hooks();
 	}
 
@@ -139,17 +145,21 @@ class WSA_Plugin {
 	 *
 	 * @return void
 	 */
-	private function register_hooks() {
-		add_action( 'init', array( $this, 'load_plugin_textdomain' ) );
+	private function register_hooks()
+	{
+		add_action('init', array($this, 'load_plugin_textdomain'));
 
-		add_action( 'admin_menu', array( $this->admin, 'register_admin_menu' ) );
-		add_action( 'admin_enqueue_scripts', array( $this->admin, 'enqueue_assets' ) );
-		add_action( 'admin_init', array( $this->admin, 'register_settings' ) );
+		add_action('admin_menu', array($this->admin, 'register_admin_menu'));
+		add_action('admin_enqueue_scripts', array($this->admin, 'enqueue_assets'));
+		add_action('admin_init', array($this->admin, 'register_settings'));
 
-		add_action( 'rest_api_init', array( $this->rest_controller, 'register_routes' ) );
+		add_action('rest_api_init', array($this->rest_controller, 'register_routes'));
 
-		add_action( 'init', array( $this->scheduler, 'register_schedules' ) );
-		add_action( 'wsa_run_scheduled_audit', array( $this->audit_manager, 'run_scheduled_audit' ) );
+		// Scheduler
+		add_action('init', array($this->scheduler, 'register_schedules'));
+
+		// Correct callback
+		add_action('wsa_run_scheduled_audit', array($this->audit_manager, 'run'));
 	}
 
 	/**
@@ -160,11 +170,12 @@ class WSA_Plugin {
 	 *
 	 * @return void
 	 */
-	public function load_plugin_textdomain() {
+	public function load_plugin_textdomain()
+	{
 		load_plugin_textdomain(
 			'wordpress-speed-analyzer',
 			false,
-			dirname( WSA_BASENAME ) . '/languages'
+			dirname(WSA_BASENAME) . '/languages'
 		);
 	}
 
@@ -173,7 +184,8 @@ class WSA_Plugin {
 	 *
 	 * @return WSA_Settings
 	 */
-	public function get_settings() {
+	public function get_settings()
+	{
 		return $this->settings;
 	}
 
@@ -182,7 +194,8 @@ class WSA_Plugin {
 	 *
 	 * @return WSA_Audit_Manager
 	 */
-	public function get_audit_manager() {
+	public function get_audit_manager()
+	{
 		return $this->audit_manager;
 	}
 }

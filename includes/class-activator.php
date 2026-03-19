@@ -1,25 +1,29 @@
 <?php
+
 /**
  * Plugin activator.
  *
  * @package WordPress_Speed_Analyzer
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
+if (! defined('ABSPATH')) {
 	exit;
 }
 
-class WSA_Activator {
-
+class WSA_Activator
+{
 	/**
 	 * Run plugin activation tasks.
 	 *
 	 * @return void
 	 */
-	public static function activate() {
+	public static function activate()
+	{
 		self::create_reports_table();
 		self::add_default_options();
-		self::schedule_events();
+
+		$scheduler = new WSA_Scheduler();
+		$scheduler->schedule_event();
 
 		flush_rewrite_rules();
 	}
@@ -29,7 +33,8 @@ class WSA_Activator {
 	 *
 	 * @return void
 	 */
-	private static function create_reports_table() {
+	private static function create_reports_table()
+	{
 		global $wpdb;
 
 		$table_name      = $wpdb->prefix . 'wsa_reports';
@@ -57,7 +62,7 @@ class WSA_Activator {
 			KEY created_at (created_at)
 		) {$charset_collate};";
 
-		dbDelta( $sql );
+		dbDelta($sql);
 	}
 
 	/**
@@ -65,26 +70,27 @@ class WSA_Activator {
 	 *
 	 * @return void
 	 */
-	private static function add_default_options() {
+	private static function add_default_options()
+	{
 		$default_options = array(
 			'api_key'                => '',
-			'target_url'             => home_url( '/' ),
+			'target_url'             => home_url('/'),
 			'default_device'         => 'mobile',
 			'scan_frequency'         => 'daily',
 			'history_limit'          => 30,
 			'delete_data_on_uninstall' => 0,
 		);
 
-		$current_options = get_option( 'wsa_settings', array() );
+		$current_options = get_option('wsa_settings', array());
 
-		if ( ! is_array( $current_options ) ) {
+		if (! is_array($current_options)) {
 			$current_options = array();
 		}
 
-		$merged_options = wp_parse_args( $current_options, $default_options );
+		$merged_options = wp_parse_args($current_options, $default_options);
 
-		add_option( 'wsa_settings', $merged_options );
-		update_option( 'wsa_settings', $merged_options );
+		add_option('wsa_settings', $merged_options);
+		update_option('wsa_settings', $merged_options);
 	}
 
 	/**
@@ -92,9 +98,10 @@ class WSA_Activator {
 	 *
 	 * @return void
 	 */
-	private static function schedule_events() {
-		if ( ! wp_next_scheduled( 'wsa_run_scheduled_audit' ) ) {
-			wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', 'wsa_run_scheduled_audit' );
+	private static function schedule_events()
+	{
+		if (! wp_next_scheduled('wsa_run_scheduled_audit')) {
+			wp_schedule_event(time() + HOUR_IN_SECONDS, 'daily', 'wsa_run_scheduled_audit');
 		}
 	}
 }
